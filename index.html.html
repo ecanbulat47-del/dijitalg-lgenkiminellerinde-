@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dijital Gölge Analizi</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Version 8) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
@@ -31,7 +31,9 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 1000px; }
         th, td { border: 1px solid #333; padding: 10px; text-align: left; }
         th { background: #222; color: var(--matrix-green); }
-        .footer-quote { margin-top: 50px; color: var(--matrix-green); font-style: italic; font-size: 14px; }
+        .status-badge { padding: 2px 5px; border-radius: 4px; font-size: 10px; }
+        .badge-red { background: #ff0055; color: white; }
+        .badge-green { background: #00ff41; color: black; }
     </style>
 </head>
 <body>
@@ -39,12 +41,14 @@
     <div class="content-layer">
         <div class="container">
             <h1 id="main-title" onclick="handleAdminClick()">Dijital Gölgen Kimin Ellerinde?</h1>
-            <p class="intro-text">Dijital ayak izin ne kadar derin? Keşfetme zamanı.</p>
+            <p class="intro-text">Sistemdeki dijital izin her yerde. Analiz et ve gör.</p>
             <button class="main-btn" onclick="runAnalysis()">SİSTEMİ ANALİZ ET</button>
+            
             <div class="qr-section">
                 <h2 style="color: var(--neon-pink); font-size: 14px;">📱 MOBİL TEST</h2>
                 <img id="qr-code" class="qr-image" src="" alt="QR">
             </div>
+
             <div class="panel" id="user-panel">
                 <div class="grid">
                     <div class="card"><div class="title">IP / VPN</div><div id="v-ip" class="value">...</div></div>
@@ -56,6 +60,7 @@
                     <div class="card"><div class="title">HIZ</div><div id="v-spd" class="value">...</div></div>
                 </div>
             </div>
+
             <div id="admin-panel">
                 <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (GÜNCEL)</h2>
                 <table>
@@ -67,6 +72,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
@@ -81,38 +87,54 @@
 
         async function runAnalysis() {
             document.getElementById("user-panel").style.display = "block";
+            
+            // Verileri önce hazırla
             let data = {
-                ip: "Bilinmiyor", loc: "Bilinmiyor", vpn: "HAYIR",
-                dev: navigator.platform,
-                brw: navigator.userAgent.split(' ').slice(-2).join(' '),
+                ip: "Bilinmiyor",
+                loc: "Bilinmiyor",
+                vpn: "HAYIR",
+                dev: navigator.platform || "Bilinmiyor",
+                brw: navigator.userAgent.split(' ').slice(-3).join(' '), // Tarayıcı bilgisini temizle
                 scr: window.screen.width + "x" + window.screen.height,
-                bat: "Erişim Yok", spd: "Bilinmiyor",
+                bat: "Erişim Yok",
+                spd: "Bilinmiyor",
                 timestamp: new Date().toISOString()
             };
 
+            // IP API'den veriyi bekle (AWAIT)
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
-                data.ip = d.ip; data.loc = d.city + "/" + d.country;
-                data.vpn = ["vpn","proxy"].some(k => (d.org||"").toLowerCase().includes(k)) ? "EVET" : "HAYIR";
-                document.getElementById("v-ip").innerText = data.ip + " (VPN: " + data.vpn + ")";
+                data.ip = d.ip || "Bilinmiyor";
+                data.loc = (d.city || "") + "/" + (d.country_name || "");
+                data.vpn = ["vpn","proxy","hosting"].some(k => (d.org||"").toLowerCase().includes(k)) ? "EVET" : "HAYIR";
+                
+                document.getElementById("v-ip").innerText = data.ip;
                 document.getElementById("v-loc").innerText = data.loc;
-            } catch(e) {}
+            } catch(e) { console.error("IP Hatası"); }
 
+            // Batarya verisini bekle
             if (navigator.getBattery) {
-                const b = await navigator.getBattery();
-                data.bat = "%" + Math.round(b.level * 100) + (b.charging ? " [Şarjda]" : "");
+                try {
+                    const b = await navigator.getBattery();
+                    data.bat = "%" + Math.round(b.level * 100) + (b.charging ? " [Şarjda]" : "");
+                } catch(e) {}
             }
-            const conn = navigator.connection;
-            if(conn) data.spd = conn.effectiveType.toUpperCase() + " (" + conn.downlink + "Mbps)";
+            
+            // İnternet hızı
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if(conn) data.spd = (conn.effectiveType || "").toUpperCase() + " (" + (conn.downlink || "0") + "Mbps)";
 
+            // UI Güncelle
             document.getElementById("v-dev").innerText = data.dev;
             document.getElementById("v-brw").innerText = data.brw;
             document.getElementById("v-scr").innerText = data.scr;
             document.getElementById("v-bat").innerText = data.bat;
             document.getElementById("v-spd").innerText = data.spd;
 
-            db.collection("analizler").add(data);
+            // ŞİMDİ KAYDET (Tüm veriler doluyken)
+            await db.collection("analizler").add(data);
+            console.log("Veri başarıyla gönderildi");
         }
 
         const canvas = document.getElementById('matrix-canvas');
@@ -146,6 +168,7 @@
         }
 
         function loadAdminData() {
+            // Verileri en yeniden eskiye çek ve dinle
             db.collection("analizler").orderBy("timestamp", "desc").limit(30).onSnapshot(snap => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
@@ -159,7 +182,7 @@
                         <td>${d.scr || '---'}</td>
                         <td>${d.bat || '---'}</td>
                         <td>${d.spd || '---'}</td>
-                        <td>${d.vpn || 'HAYIR'}</td>
+                        <td><span class="status-badge ${d.vpn === 'EVET' ? 'badge-red' : 'badge-green'}">${d.vpn || 'HAYIR'}</span></td>
                     </tr>`;
                 });
             });
