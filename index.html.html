@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dijital Gölge Analizi</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDK (Version 8) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
@@ -15,139 +15,24 @@
             --neon-pink: #ff00ff;
             --neon-blue: #00e5ff;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Orbitron', sans-serif;
-            background-color: var(--bg-black);
-            color: white;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        #matrix-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-        }
-
-        .content-layer {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .container {
-            max-width: 1100px;
-            width: 95%;
-            margin: auto;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: clamp(24px, 5vw, 42px);
-            color: var(--neon-blue);
-            text-shadow: 0 0 20px var(--neon-blue);
-            margin-bottom: 30px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .intro-text {
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 10px #000;
-        }
-
-        .main-btn {
-            margin: 30px 0;
-            padding: 20px 40px;
-            border: 2px solid var(--matrix-green);
-            background: rgba(0, 0, 0, 0.9);
-            color: var(--matrix-green);
-            font-family: 'Orbitron';
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 12px;
-            box-shadow: 0 0 20px var(--matrix-green);
-            transition: all 0.3s ease;
-        }
-
-        .main-btn:hover {
-            background: var(--matrix-green);
-            color: black;
-            transform: scale(1.05);
-        }
-
-        .qr-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 0, 255, 0.05);
-            border: 1px solid var(--neon-pink);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            display: inline-block;
-        }
-
-        .qr-image {
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            width: 150px;
-            height: 150px;
-            margin: 10px auto;
-            display: block;
-        }
-
-        .panel {
-            display: none;
-            margin-top: 50px;
-            width: 100%;
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .card {
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid var(--neon-blue);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: left;
-        }
-
+        body { font-family: 'Orbitron', sans-serif; background-color: var(--bg-black); color: white; overflow-x: hidden; min-height: 100vh; }
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        .content-layer { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.4); }
+        .container { max-width: 1100px; width: 95%; margin: auto; padding: 60px 20px; text-align: center; }
+        h1 { font-size: clamp(24px, 5vw, 42px); color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); margin-bottom: 30px; cursor: pointer; user-select: none; }
+        .intro-text { font-size: 18px; line-height: 1.6; margin-bottom: 10px; text-shadow: 2px 2px 10px #000; }
+        .main-btn { margin: 30px 0; padding: 20px 40px; border: 2px solid var(--matrix-green); background: rgba(0, 0, 0, 0.9); color: var(--matrix-green); font-family: 'Orbitron'; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 12px; box-shadow: 0 0 20px var(--matrix-green); transition: all 0.3s ease; }
+        .main-btn:hover { background: var(--matrix-green); color: black; transform: scale(1.05); }
+        .qr-section { margin-top: 20px; padding: 20px; background: rgba(255, 0, 255, 0.05); border: 1px solid var(--neon-pink); border-radius: 20px; backdrop-filter: blur(10px); display: inline-block; }
+        .qr-image { background: white; padding: 10px; border-radius: 10px; width: 150px; height: 150px; margin: 10px auto; display: block; }
+        .panel { display: none; margin-top: 50px; width: 100%; animation: slideUp 0.8s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .card { background: rgba(0, 0, 0, 0.9); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 15px; text-align: left; }
         .card .title { color: var(--neon-blue); font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,229,255,0.2); }
         .card .value { font-family: 'JetBrains Mono'; font-size: 13px; word-break: break-all; color: #fff; }
-
-        #admin-panel {
-            display: none;
-            background: #111;
-            border: 2px solid var(--matrix-green);
-            margin-top: 50px;
-            padding: 20px;
-            border-radius: 15px;
-            width: 100%;
-            overflow-x: auto;
-        }
-
+        #admin-panel { display: none; background: #111; border: 2px solid var(--matrix-green); margin-top: 50px; padding: 20px; border-radius: 15px; width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 1000px; }
         th, td { border: 1px solid #333; padding: 10px; text-align: left; }
         th { background: #222; color: var(--matrix-green); }
@@ -161,10 +46,8 @@
     <div class="content-layer">
         <div class="container">
             <h1 id="main-title" onclick="handleAdminClick()">Dijital Gölgen Kimin Ellerinde?</h1>
-            
             <p class="intro-text">Dijital Gölge Analizine Hoş Geldin.</p>
             <p class="intro-text">Dijital ayak izinin ne kadar derin olduğunu keşfet.</p>
-            
             <button class="main-btn" onclick="runAnalysis()">SİSTEMİ ANALİZ ET</button>
 
             <div class="qr-section">
@@ -173,7 +56,6 @@
                 <p style="font-size: 10px; color: #aaa; margin-top: 10px;">Hemen okut, telefondan devam et</p>
             </div>
 
-            <!-- ANALİZ PANELİ -->
             <div class="panel" id="user-panel">
                 <div class="grid">
                     <div class="card" style="border-color: var(--neon-pink);"><div class="title" style="color: var(--neon-pink);">GÜVENLİK (VPN/PROXY)</div><div class="value" id="v-vpn">Analiz Ediliyor...</div></div>
@@ -187,10 +69,9 @@
                 </div>
             </div>
 
-            <!-- ADMİN PANELİ -->
             <div id="admin-panel">
                 <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (ADMİN)</h2>
-                <div id="status-msg" style="font-size: 12px; color: #888; margin-top: 10px;">Veri girişi bekleniyor...</div>
+                <div id="status-msg" style="font-size: 12px; color: #888; margin-top: 10px;">Yükleniyor...</div>
                 <table>
                     <thead>
                         <tr>
@@ -207,13 +88,11 @@
                     <tbody id="admin-table-body"></tbody>
                 </table>
             </div>
-
             <p class="footer-quote">“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</p>
         </div>
     </div>
 
     <script>
-        // Firebase Konfigürasyonu (Senin Bilgilerin)
         const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
             authDomain: "dijital-golgen-kimin-ellerinde.firebaseapp.com",
@@ -222,67 +101,62 @@
             messagingSenderId: "540853859036",
             appId: "1:540853859036:web:742ad324abbfdb90fc7a19"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
         async function runAnalysis() {
-            const up = document.getElementById("user-panel");
-            up.style.display = "block";
-            window.scrollTo({ top: up.offsetTop - 50, behavior: 'smooth' });
-
-            // Bilgileri topluyoruz
+            document.getElementById("user-panel").style.display = "block";
+            
             let logData = {
-                ip: "Bilinmiyor", 
-                loc: "Bilinmiyor", 
-                dev: `${navigator.platform} | ${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"}`,
-                brw: navigator.userAgent.split(' ').slice(-2).join(' '),
-                scr: `${screen.width}x${screen.height}`,
+                ip: "Yükleniyor...", 
+                loc: "Yükleniyor...", 
+                dev: `${navigator.platform} (${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"})`,
+                brw: navigator.userAgent.split(' ').slice(-3).join(' '),
+                scr: `${window.screen.width}x${window.screen.height}`,
                 bat: "---", 
-                spd: "Belirsiz",
+                spd: "Bilinmiyor",
                 vpn: "HAYIR", 
                 timestamp: new Date().toISOString()
             };
 
-            // 1. IP ve Konum
+            // IP & Loc
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
-                document.getElementById("v-ip").innerText = d.ip;
-                document.getElementById("v-loc").innerText = `${d.city}, ${d.country_name} (${d.org})`;
-                
-                const isVpn = ["vpn", "proxy", "hosting", "cloud", "server"].some(k => (d.org || "").toLowerCase().includes(k));
-                document.getElementById("v-vpn").innerText = isVpn ? "TEHLİKE: VPN/PROXY" : "GÜVENLİ";
-                document.getElementById("v-vpn").style.color = isVpn ? "#ff00ff" : "#00ff41";
-                
-                logData.ip = d.ip;
-                logData.loc = d.city || "Bilinmiyor";
+                logData.ip = d.ip || "Gizli";
+                logData.loc = `${d.city || '?'}, ${d.country_name || '?'}`;
+                const isVpn = ["vpn", "proxy", "hosting", "server"].some(k => (d.org || "").toLowerCase().includes(k));
                 logData.vpn = isVpn ? "EVET" : "HAYIR";
-            } catch(e) { document.getElementById("v-ip").innerText = "Bloklandı"; }
+                
+                document.getElementById("v-ip").innerText = logData.ip;
+                document.getElementById("v-loc").innerText = `${logData.loc} (${d.org})`;
+                document.getElementById("v-vpn").innerText = isVpn ? "TEHLİKE: VPN" : "GÜVENLİ";
+                document.getElementById("v-vpn").style.color = isVpn ? "#ff00ff" : "#00ff41";
+            } catch(e) { console.log("IP Hatası"); }
 
-            // 2. Batarya
+            // Batarya
             if (navigator.getBattery) {
                 const b = await navigator.getBattery();
-                logData.bat = `%${Math.round(b.level * 100)} ${b.charging ? '[Şarjda]' : ''}`;
+                logData.bat = `%${Math.round(b.level * 100)}${b.charging ? ' [Şarjda]' : ''}`;
                 document.getElementById("v-bat").innerText = logData.bat;
             }
 
-            // 3. Diğer Bilgiler
-            document.getElementById("v-brw").innerText = logData.brw;
-            document.getElementById("v-scr").innerText = logData.scr;
-            document.getElementById("v-dev").innerText = logData.dev;
-            
+            // Hız
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if(conn) {
                 logData.spd = `${conn.effectiveType.toUpperCase()} (~${conn.downlink} Mbps)`;
                 document.getElementById("v-spd").innerText = logData.spd;
             }
 
-            // Firebase Kayıt (8 Verinin Tamamı Gidiyor)
-            db.collection("analizler").add(logData).catch(err => console.log("Hata:", err));
+            document.getElementById("v-dev").innerText = logData.dev;
+            document.getElementById("v-brw").innerText = logData.brw;
+            document.getElementById("v-scr").innerText = logData.scr;
+
+            db.collection("analizler").add(logData).then(() => {
+                console.log("Veri kaydedildi");
+            });
         }
 
-        // Matrix Arka Plan
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -302,12 +176,10 @@
         }
         setInterval(draw, 40);
 
-        // QR Kod
         window.onload = () => {
             document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
         };
 
-        // Admin Paneli (Başlığa 5 Tık)
         let clickCount = 0;
         function handleAdminClick() {
             clickCount++;
@@ -316,24 +188,22 @@
                 if (pass === "hoca" || pass === "1234") {
                     document.getElementById("admin-panel").style.display = "block";
                     loadAdminData();
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 }
                 clickCount = 0;
             }
         }
 
-        // Verileri Tabloya Yazdırma
         function loadAdminData() {
-            db.collection("analizler").orderBy("timestamp", "desc").limit(50).onSnapshot((snap) => {
+            db.collection("analizler").orderBy("timestamp", "desc").limit(30).onSnapshot((snap) => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
                 snap.forEach((doc) => {
                     const d = doc.data();
                     const row = `<tr>
                         <td>${new Date(d.timestamp).toLocaleTimeString('tr-TR')}</td>
-                        <td>${d.ip || '---'}<br><small>${d.loc || '---'}</small></td>
+                        <td>${d.ip || '?'}<br><small>${d.loc || '?'}</small></td>
                         <td>${d.dev || '---'}</td>
-                        <td>${d.brw || '---'}</td>
+                        <td>${d.brw || 'Bilinmiyor'}</td>
                         <td>${d.scr || '---'}</td>
                         <td>${d.bat || '---'}</td>
                         <td>${d.spd || '---'}</td>
@@ -341,7 +211,7 @@
                     </tr>`;
                     tbody.innerHTML += row;
                 });
-                document.getElementById("status-msg").innerText = "Kayıtlar güncel.";
+                document.getElementById("status-msg").innerText = "Son 30 kayıt listeleniyor.";
             });
         }
     </script>
