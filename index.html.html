@@ -9,18 +9,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
-        :root {
-            --matrix-green: #00ff41;
-            --bg-black: #000;
-            --neon-pink: #ff00ff;
-            --neon-blue: #00e5ff;
-        }
+        :root { --matrix-green: #00ff41; --bg-black: #000; --neon-pink: #ff00ff; --neon-blue: #00e5ff; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Orbitron', sans-serif; background-color: var(--bg-black); color: white; overflow-x: hidden; min-height: 100vh; }
         #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         .content-layer { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.4); }
         .container { max-width: 1100px; width: 95%; margin: auto; padding: 60px 20px; text-align: center; }
-        h1 { font-size: clamp(24px, 5vw, 42px); color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); margin-bottom: 30px; cursor: pointer; user-select: none; }
+        h1 { font-size: clamp(24px, 5vw, 42px); color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); margin-bottom: 30px; cursor: pointer; }
         .intro-text { font-size: 18px; line-height: 1.6; margin-bottom: 10px; text-shadow: 2px 2px 10px #000; }
         .main-btn { margin: 30px 0; padding: 20px 40px; border: 2px solid var(--matrix-green); background: rgba(0, 0, 0, 0.9); color: var(--matrix-green); font-family: 'Orbitron'; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 12px; box-shadow: 0 0 20px var(--matrix-green); transition: all 0.3s ease; }
         .main-btn:hover { background: var(--matrix-green); color: black; transform: scale(1.05); }
@@ -40,58 +35,38 @@
     </style>
 </head>
 <body>
-
     <canvas id="matrix-canvas"></canvas>
-
     <div class="content-layer">
         <div class="container">
             <h1 id="main-title" onclick="handleAdminClick()">Dijital Gölgen Kimin Ellerinde?</h1>
-            <p class="intro-text">Dijital Gölge Analizine Hoş Geldin.</p>
-            <p class="intro-text">Dijital ayak izinin ne kadar derin olduğunu keşfet.</p>
+            <p class="intro-text">Dijital ayak izin ne kadar derin? Keşfetme zamanı.</p>
             <button class="main-btn" onclick="runAnalysis()">SİSTEMİ ANALİZ ET</button>
-
             <div class="qr-section">
-                <h2 style="color: var(--neon-pink); font-size: 16px;">📱 MOBİL ERİŞİM</h2>
+                <h2 style="color: var(--neon-pink); font-size: 14px;">📱 MOBİL TEST</h2>
                 <img id="qr-code" class="qr-image" src="" alt="QR">
-                <p style="font-size: 10px; color: #aaa; margin-top: 10px;">Hemen okut, telefondan devam et</p>
             </div>
-
             <div class="panel" id="user-panel">
                 <div class="grid">
-                    <div class="card" style="border-color: var(--neon-pink);"><div class="title" style="color: var(--neon-pink);">GÜVENLİK (VPN/PROXY)</div><div class="value" id="v-vpn">Analiz Ediliyor...</div></div>
-                    <div class="card"><div class="title">IP ADRESİ</div><div class="value" id="v-ip">...</div></div>
-                    <div class="card"><div class="title">KONUM / İSS</div><div class="value" id="v-loc">...</div></div>
-                    <div class="card"><div class="title">CİHAZ ANALİZİ</div><div class="value" id="v-dev">...</div></div>
-                    <div class="card"><div class="title">TARAYICI KİMLİĞİ</div><div class="value" id="v-brw">...</div></div>
-                    <div class="card"><div class="title">EKRAN ÇÖZÜNÜRLÜĞÜ</div><div class="value" id="v-scr">...</div></div>
-                    <div class="card"><div class="title">BATARYA DURUMU</div><div class="value" id="v-bat">...</div></div>
-                    <div class="card"><div class="title">BAĞLANTI TİPİ</div><div class="value" id="v-spd">...</div></div>
+                    <div class="card"><div class="title">IP / VPN</div><div id="v-ip" class="value">...</div></div>
+                    <div class="card"><div class="title">KONUM</div><div id="v-loc" class="value">...</div></div>
+                    <div class="card"><div class="title">CİHAZ</div><div id="v-dev" class="value">...</div></div>
+                    <div class="card"><div class="title">TARAYICI</div><div id="v-brw" class="value">...</div></div>
+                    <div class="card"><div class="title">EKRAN</div><div id="v-scr" class="value">...</div></div>
+                    <div class="card"><div class="title">BATARYA</div><div id="v-bat" class="value">...</div></div>
+                    <div class="card"><div class="title">HIZ</div><div id="v-spd" class="value">...</div></div>
                 </div>
             </div>
-
             <div id="admin-panel">
-                <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (ADMİN)</h2>
-                <div id="status-msg" style="font-size: 12px; color: #888; margin-top: 10px;">Yükleniyor...</div>
+                <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (GÜNCEL)</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Tarih</th>
-                            <th>IP / Konum</th>
-                            <th>Cihaz</th>
-                            <th>Tarayıcı</th>
-                            <th>Ekran</th>
-                            <th>Pil</th>
-                            <th>Hız</th>
-                            <th>VPN?</th>
-                        </tr>
+                        <tr><th>Zaman</th><th>IP / Konum</th><th>Cihaz</th><th>Tarayıcı</th><th>Ekran</th><th>Pil</th><th>Hız</th><th>VPN</th></tr>
                     </thead>
                     <tbody id="admin-table-body"></tbody>
                 </table>
             </div>
-            <p class="footer-quote">“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</p>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
@@ -106,86 +81,63 @@
 
         async function runAnalysis() {
             document.getElementById("user-panel").style.display = "block";
-            
-            let logData = {
-                ip: "Yükleniyor...", 
-                loc: "Yükleniyor...", 
-                dev: `${navigator.platform} (${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"})`,
-                brw: navigator.userAgent.split(' ').slice(-3).join(' '),
-                scr: `${window.screen.width}x${window.screen.height}`,
-                bat: "---", 
-                spd: "Bilinmiyor",
-                vpn: "HAYIR", 
+            let data = {
+                ip: "Bilinmiyor", loc: "Bilinmiyor", vpn: "HAYIR",
+                dev: navigator.platform,
+                brw: navigator.userAgent.split(' ').slice(-2).join(' '),
+                scr: window.screen.width + "x" + window.screen.height,
+                bat: "Erişim Yok", spd: "Bilinmiyor",
                 timestamp: new Date().toISOString()
             };
 
-            // IP & Loc
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
-                logData.ip = d.ip || "Gizli";
-                logData.loc = `${d.city || '?'}, ${d.country_name || '?'}`;
-                const isVpn = ["vpn", "proxy", "hosting", "server"].some(k => (d.org || "").toLowerCase().includes(k));
-                logData.vpn = isVpn ? "EVET" : "HAYIR";
-                
-                document.getElementById("v-ip").innerText = logData.ip;
-                document.getElementById("v-loc").innerText = `${logData.loc} (${d.org})`;
-                document.getElementById("v-vpn").innerText = isVpn ? "TEHLİKE: VPN" : "GÜVENLİ";
-                document.getElementById("v-vpn").style.color = isVpn ? "#ff00ff" : "#00ff41";
-            } catch(e) { console.log("IP Hatası"); }
+                data.ip = d.ip; data.loc = d.city + "/" + d.country;
+                data.vpn = ["vpn","proxy"].some(k => (d.org||"").toLowerCase().includes(k)) ? "EVET" : "HAYIR";
+                document.getElementById("v-ip").innerText = data.ip + " (VPN: " + data.vpn + ")";
+                document.getElementById("v-loc").innerText = data.loc;
+            } catch(e) {}
 
-            // Batarya
             if (navigator.getBattery) {
                 const b = await navigator.getBattery();
-                logData.bat = `%${Math.round(b.level * 100)}${b.charging ? ' [Şarjda]' : ''}`;
-                document.getElementById("v-bat").innerText = logData.bat;
+                data.bat = "%" + Math.round(b.level * 100) + (b.charging ? " [Şarjda]" : "");
             }
+            const conn = navigator.connection;
+            if(conn) data.spd = conn.effectiveType.toUpperCase() + " (" + conn.downlink + "Mbps)";
 
-            // Hız
-            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            if(conn) {
-                logData.spd = `${conn.effectiveType.toUpperCase()} (~${conn.downlink} Mbps)`;
-                document.getElementById("v-spd").innerText = logData.spd;
-            }
+            document.getElementById("v-dev").innerText = data.dev;
+            document.getElementById("v-brw").innerText = data.brw;
+            document.getElementById("v-scr").innerText = data.scr;
+            document.getElementById("v-bat").innerText = data.bat;
+            document.getElementById("v-spd").innerText = data.spd;
 
-            document.getElementById("v-dev").innerText = logData.dev;
-            document.getElementById("v-brw").innerText = logData.brw;
-            document.getElementById("v-scr").innerText = logData.scr;
-
-            db.collection("analizler").add(logData).then(() => {
-                console.log("Veri kaydedildi");
-            });
+            db.collection("analizler").add(data);
         }
 
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = res; res();
-        const chars = "01010101ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const drops = Array(Math.floor(canvas.width/18)).fill(1);
         function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#0f0';
-            ctx.font = '18px monospace';
+            ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = '#0f0'; ctx.font = '18px monospace';
             drops.forEach((y, i) => {
-                ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*18, y*18);
+                ctx.fillText("01"[Math.floor(Math.random()*2)], i*18, y*18);
                 if (y*18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(draw, 40);
-
-        window.onload = () => {
-            document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
-        };
+        window.onload = () => { document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`; };
 
         let clickCount = 0;
         function handleAdminClick() {
             clickCount++;
             if (clickCount === 5) {
                 const pass = prompt("Şifre:");
-                if (pass === "hoca" || pass === "1234") {
+                if (pass === "1234" || pass === "hoca") {
                     document.getElementById("admin-panel").style.display = "block";
                     loadAdminData();
                 }
@@ -194,24 +146,22 @@
         }
 
         function loadAdminData() {
-            db.collection("analizler").orderBy("timestamp", "desc").limit(30).onSnapshot((snap) => {
+            db.collection("analizler").orderBy("timestamp", "desc").limit(30).onSnapshot(snap => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
-                snap.forEach((doc) => {
+                snap.forEach(doc => {
                     const d = doc.data();
-                    const row = `<tr>
-                        <td>${new Date(d.timestamp).toLocaleTimeString('tr-TR')}</td>
-                        <td>${d.ip || '?'}<br><small>${d.loc || '?'}</small></td>
+                    tbody.innerHTML += `<tr>
+                        <td>${new Date(d.timestamp).toLocaleTimeString()}</td>
+                        <td>${d.ip || '---'}<br><small>${d.loc || '---'}</small></td>
                         <td>${d.dev || '---'}</td>
-                        <td>${d.brw || 'Bilinmiyor'}</td>
+                        <td>${d.brw || '---'}</td>
                         <td>${d.scr || '---'}</td>
                         <td>${d.bat || '---'}</td>
                         <td>${d.spd || '---'}</td>
                         <td>${d.vpn || 'HAYIR'}</td>
                     </tr>`;
-                    tbody.innerHTML += row;
                 });
-                document.getElementById("status-msg").innerText = "Son 30 kayıt listeleniyor.";
             });
         }
     </script>
