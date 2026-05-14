@@ -44,7 +44,7 @@
         }
 
         .container {
-            max-width: 1100px; /* Tablo için biraz genişletildi */
+            max-width: 1100px;
             width: 95%;
             margin: auto;
             padding: 60px 20px;
@@ -148,9 +148,9 @@
             overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 900px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 1000px; }
         th, td { border: 1px solid #333; padding: 10px; text-align: left; }
-        th { background: #222; color: var(--matrix-green); text-transform: uppercase; }
+        th { background: #222; color: var(--matrix-green); }
         .footer-quote { margin-top: 50px; color: var(--matrix-green); font-style: italic; font-size: 14px; }
     </style>
 </head>
@@ -173,7 +173,7 @@
                 <p style="font-size: 10px; color: #aaa; margin-top: 10px;">Hemen okut, telefondan devam et</p>
             </div>
 
-            <!-- 8 KARTLI ANALİZ PANELİ -->
+            <!-- ANALİZ PANELİ -->
             <div class="panel" id="user-panel">
                 <div class="grid">
                     <div class="card" style="border-color: var(--neon-pink);"><div class="title" style="color: var(--neon-pink);">GÜVENLİK (VPN/PROXY)</div><div class="value" id="v-vpn">Analiz Ediliyor...</div></div>
@@ -187,7 +187,7 @@
                 </div>
             </div>
 
-            <!-- GİZLİ ADMİN PANELİ (TÜM VERİLER) -->
+            <!-- ADMİN PANELİ -->
             <div id="admin-panel">
                 <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (ADMİN)</h2>
                 <div id="status-msg" style="font-size: 12px; color: #888; margin-top: 10px;">Veri girişi bekleniyor...</div>
@@ -213,7 +213,7 @@
     </div>
 
     <script>
-        // --- SENİN FIREBASE BİLGİLERİN ---
+        // Firebase Konfigürasyonu (Senin Bilgilerin)
         const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
             authDomain: "dijital-golgen-kimin-ellerinde.firebaseapp.com",
@@ -231,17 +231,17 @@
             up.style.display = "block";
             window.scrollTo({ top: up.offsetTop - 50, behavior: 'smooth' });
 
-            // 8 Verinin tamamını hazırlayalım
+            // Bilgileri topluyoruz
             let logData = {
-                timestamp: new Date().toISOString(),
-                ip: "Bilinmiyor",
-                loc: "Bilinmiyor",
+                ip: "Bilinmiyor", 
+                loc: "Bilinmiyor", 
                 dev: `${navigator.platform} | ${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"}`,
                 brw: navigator.userAgent.split(' ').slice(-2).join(' '),
                 scr: `${screen.width}x${screen.height}`,
-                bat: "---",
-                spd: navigator.connection ? `${navigator.connection.effectiveType.toUpperCase()}` : "Belirsiz",
-                vpn: "HAYIR"
+                bat: "---", 
+                spd: "Belirsiz",
+                vpn: "HAYIR", 
+                timestamp: new Date().toISOString()
             };
 
             // 1. IP ve Konum
@@ -252,7 +252,7 @@
                 document.getElementById("v-loc").innerText = `${d.city}, ${d.country_name} (${d.org})`;
                 
                 const isVpn = ["vpn", "proxy", "hosting", "cloud", "server"].some(k => (d.org || "").toLowerCase().includes(k));
-                document.getElementById("v-vpn").innerText = isVpn ? "TEHLİKE: VPN/PROXY TESPİT EDİLDİ" : "GÜVENLİ: DOĞRUDAN BAĞLANTI";
+                document.getElementById("v-vpn").innerText = isVpn ? "TEHLİKE: VPN/PROXY" : "GÜVENLİ";
                 document.getElementById("v-vpn").style.color = isVpn ? "#ff00ff" : "#00ff41";
                 
                 logData.ip = d.ip;
@@ -267,13 +267,18 @@
                 document.getElementById("v-bat").innerText = logData.bat;
             }
 
-            // 3. Ekran ve Diğerleri
-            document.getElementById("v-dev").innerText = logData.dev;
+            // 3. Diğer Bilgiler
             document.getElementById("v-brw").innerText = logData.brw;
             document.getElementById("v-scr").innerText = logData.scr;
-            document.getElementById("v-spd").innerText = logData.spd;
+            document.getElementById("v-dev").innerText = logData.dev;
+            
+            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if(conn) {
+                logData.spd = `${conn.effectiveType.toUpperCase()} (~${conn.downlink} Mbps)`;
+                document.getElementById("v-spd").innerText = logData.spd;
+            }
 
-            // 4. Firebase'e TÜM logData'yı gönder
+            // Firebase Kayıt (8 Verinin Tamamı Gidiyor)
             db.collection("analizler").add(logData).catch(err => console.log("Hata:", err));
         }
 
@@ -282,7 +287,7 @@
         const ctx = canvas.getContext('2d');
         function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = res; res();
-        const chars = "01010101ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺ";
+        const chars = "01010101ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const drops = Array(Math.floor(canvas.width/18)).fill(1);
         function draw() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
@@ -299,15 +304,15 @@
 
         // QR Kod
         window.onload = () => {
-            document.getElementById("qr-code").src = `https://quickchart.io/qr?text=${encodeURIComponent(window.location.href)}&size=150`;
+            document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
         };
 
-        // Admin Girişi (5 Tıklama)
+        // Admin Paneli (Başlığa 5 Tık)
         let clickCount = 0;
         function handleAdminClick() {
             clickCount++;
             if (clickCount === 5) {
-                const pass = prompt("Yönetici Şifresi:");
+                const pass = prompt("Şifre:");
                 if (pass === "hoca" || pass === "1234") {
                     document.getElementById("admin-panel").style.display = "block";
                     loadAdminData();
@@ -317,25 +322,26 @@
             }
         }
 
-        // Admin Verilerini 8 Sütun Olarak Göster
+        // Verileri Tabloya Yazdırma
         function loadAdminData() {
-            db.collection("analizler").orderBy("timestamp", "desc").onSnapshot((snap) => {
+            db.collection("analizler").orderBy("timestamp", "desc").limit(50).onSnapshot((snap) => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
                 snap.forEach((doc) => {
                     const d = doc.data();
-                    tbody.innerHTML += `<tr>
+                    const row = `<tr>
                         <td>${new Date(d.timestamp).toLocaleTimeString('tr-TR')}</td>
-                        <td>${d.ip}<br><small>${d.loc}</small></td>
-                        <td>${d.dev}</td>
+                        <td>${d.ip || '---'}<br><small>${d.loc || '---'}</small></td>
+                        <td>${d.dev || '---'}</td>
                         <td>${d.brw || '---'}</td>
                         <td>${d.scr || '---'}</td>
-                        <td>${d.bat}</td>
+                        <td>${d.bat || '---'}</td>
                         <td>${d.spd || '---'}</td>
-                        <td style="color:${d.vpn==='EVET'?'#ff00ff':'#0f0'}">${d.vpn}</td>
+                        <td>${d.vpn || 'HAYIR'}</td>
                     </tr>`;
+                    tbody.innerHTML += row;
                 });
-                document.getElementById("status-msg").innerText = "Tüm dijital gölge verileri yüklendi.";
+                document.getElementById("status-msg").innerText = "Kayıtlar güncel.";
             });
         }
     </script>
