@@ -44,7 +44,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px; /* Tablo için biraz genişletildi */
             width: 95%;
             margin: auto;
             padding: 60px 20px;
@@ -148,9 +148,9 @@
             overflow-x: auto;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; color: #fff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 900px; }
         th, td { border: 1px solid #333; padding: 10px; text-align: left; }
-        th { background: #222; color: var(--matrix-green); }
+        th { background: #222; color: var(--matrix-green); text-transform: uppercase; }
         .footer-quote { margin-top: 50px; color: var(--matrix-green); font-style: italic; font-size: 14px; }
     </style>
 </head>
@@ -187,7 +187,7 @@
                 </div>
             </div>
 
-            <!-- GİZLİ ADMİN PANELİ -->
+            <!-- GİZLİ ADMİN PANELİ (TÜM VERİLER) -->
             <div id="admin-panel">
                 <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (ADMİN)</h2>
                 <div id="status-msg" style="font-size: 12px; color: #888; margin-top: 10px;">Veri girişi bekleniyor...</div>
@@ -197,7 +197,10 @@
                             <th>Tarih</th>
                             <th>IP / Konum</th>
                             <th>Cihaz</th>
+                            <th>Tarayıcı</th>
+                            <th>Ekran</th>
                             <th>Pil</th>
+                            <th>Hız</th>
                             <th>VPN?</th>
                         </tr>
                     </thead>
@@ -210,7 +213,7 @@
     </div>
 
     <script>
-        // --- SENİN FIREBASE BİLGİLERİN BURADA ---
+        // --- SENİN FIREBASE BİLGİLERİN ---
         const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
             authDomain: "dijital-golgen-kimin-ellerinde.firebaseapp.com",
@@ -220,7 +223,6 @@
             appId: "1:540853859036:web:742ad324abbfdb90fc7a19"
         };
 
-        // Firebase Başlat
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -229,12 +231,20 @@
             up.style.display = "block";
             window.scrollTo({ top: up.offsetTop - 50, behavior: 'smooth' });
 
+            // 8 Verinin tamamını hazırlayalım
             let logData = {
-                ip: "Bilinmiyor", loc: "Bilinmiyor", dev: navigator.platform, 
-                bat: "---", vpn: "HAYIR", timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                ip: "Bilinmiyor",
+                loc: "Bilinmiyor",
+                dev: `${navigator.platform} | ${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"}`,
+                brw: navigator.userAgent.split(' ').slice(-2).join(' '),
+                scr: `${screen.width}x${screen.height}`,
+                bat: "---",
+                spd: navigator.connection ? `${navigator.connection.effectiveType.toUpperCase()}` : "Belirsiz",
+                vpn: "HAYIR"
             };
 
-            // 1. IP ve Konum Analizi
+            // 1. IP ve Konum
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
@@ -248,31 +258,26 @@
                 logData.ip = d.ip;
                 logData.loc = d.city || "Bilinmiyor";
                 logData.vpn = isVpn ? "EVET" : "HAYIR";
-            } catch(e) { 
-                document.getElementById("v-ip").innerText = "Bloklandı (AdBlock?)";
-            }
+            } catch(e) { document.getElementById("v-ip").innerText = "Bloklandı"; }
 
-            // 2. Batarya Analizi
+            // 2. Batarya
             if (navigator.getBattery) {
                 const b = await navigator.getBattery();
-                const bLevel = `%${Math.round(b.level * 100)} ${b.charging ? '[Şarjda]' : ''}`;
-                document.getElementById("v-bat").innerText = bLevel;
-                logData.bat = bLevel;
-            } else {
-                document.getElementById("v-bat").innerText = "Erişilemiyor";
+                logData.bat = `%${Math.round(b.level * 100)} ${b.charging ? '[Şarjda]' : ''}`;
+                document.getElementById("v-bat").innerText = logData.bat;
             }
 
-            // 3. Diğer Bilgiler
-            document.getElementById("v-dev").innerText = `${navigator.platform} | ${/Mobi|Android/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"}`;
-            document.getElementById("v-brw").innerText = navigator.userAgent.split(' ').slice(-2).join(' ');
-            document.getElementById("v-scr").innerText = `${screen.width}x${screen.height} (${window.devicePixelRatio}x)`;
-            document.getElementById("v-spd").innerText = navigator.connection ? `${navigator.connection.effectiveType.toUpperCase()} (~${navigator.connection.downlink} Mbps)` : "Belirsiz";
+            // 3. Ekran ve Diğerleri
+            document.getElementById("v-dev").innerText = logData.dev;
+            document.getElementById("v-brw").innerText = logData.brw;
+            document.getElementById("v-scr").innerText = logData.scr;
+            document.getElementById("v-spd").innerText = logData.spd;
 
-            // 4. Veritabanına Kaydet (Sessizce)
-            db.collection("analizler").add(logData).catch(err => console.log("Kayıt hatası:", err));
+            // 4. Firebase'e TÜM logData'yı gönder
+            db.collection("analizler").add(logData).catch(err => console.log("Hata:", err));
         }
 
-        // Matrix Arka Plan Efekti
+        // Matrix Arka Plan
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -292,12 +297,12 @@
         }
         setInterval(draw, 40);
 
-        // Dinamik QR Kod
+        // QR Kod
         window.onload = () => {
             document.getElementById("qr-code").src = `https://quickchart.io/qr?text=${encodeURIComponent(window.location.href)}&size=150`;
         };
 
-        // Gizli Admin Paneli Açma (Başlığa 5 Tıklama)
+        // Admin Girişi (5 Tıklama)
         let clickCount = 0;
         function handleAdminClick() {
             clickCount++;
@@ -312,23 +317,25 @@
             }
         }
 
-        // Admin Verilerini Canlı Yükle
+        // Admin Verilerini 8 Sütun Olarak Göster
         function loadAdminData() {
-            db.collection("analizler").orderBy("timestamp", "desc").limit(50).onSnapshot((snap) => {
+            db.collection("analizler").orderBy("timestamp", "desc").onSnapshot((snap) => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
                 snap.forEach((doc) => {
-                    const data = doc.data();
-                    const row = `<tr>
-                        <td>${new Date(data.timestamp).toLocaleString('tr-TR')}</td>
-                        <td>${data.ip} <br> <small>${data.loc}</small></td>
-                        <td>${data.dev}</td>
-                        <td>${data.bat}</td>
-                        <td>${data.vpn}</td>
+                    const d = doc.data();
+                    tbody.innerHTML += `<tr>
+                        <td>${new Date(d.timestamp).toLocaleTimeString('tr-TR')}</td>
+                        <td>${d.ip}<br><small>${d.loc}</small></td>
+                        <td>${d.dev}</td>
+                        <td>${d.brw || '---'}</td>
+                        <td>${d.scr || '---'}</td>
+                        <td>${d.bat}</td>
+                        <td>${d.spd || '---'}</td>
+                        <td style="color:${d.vpn==='EVET'?'#ff00ff':'#0f0'}">${d.vpn}</td>
                     </tr>`;
-                    tbody.innerHTML += row;
                 });
-                document.getElementById("status-msg").innerText = "Sistem kayıtları canlı olarak güncellendi.";
+                document.getElementById("status-msg").innerText = "Tüm dijital gölge verileri yüklendi.";
             });
         }
     </script>
