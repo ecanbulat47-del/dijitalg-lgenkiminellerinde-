@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dijital Gölge Analizi</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { 
             --matrix-green: #00ff41; 
@@ -25,90 +24,53 @@
         .content-layer { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.4); }
         .container { max-width: 1100px; width: 95%; margin: auto; padding: 60px 20px; text-align: center; }
         
-        /* Ana Başlık ve Alt Söz - Cafcaflı Stil */
-        h1, .footer-quote-styled { 
-            font-size: clamp(28px, 6vw, 48px); 
-            color: var(--neon-blue); 
-            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px rgba(0, 229, 255, 0.5); 
-            margin-bottom: 30px; 
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 2px;
-            animation: pulseGlow 2s infinite alternate;
-        }
-
-        .footer-quote-styled {
-            margin-top: 80px;
-            color: var(--matrix-green);
-            text-shadow: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green);
-        }
-
-        @keyframes pulseGlow {
-            from { transform: scale(1); text-shadow: 0 0 10px currentColor; }
-            to { transform: scale(1.02); text-shadow: 0 0 25px currentColor, 0 0 45px currentColor; }
-        }
-
+        h1 { font-size: clamp(24px, 5vw, 42px); color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); margin-bottom: 20px; cursor: pointer; }
         .intro-text { font-size: 18px; line-height: 1.6; margin-bottom: 10px; text-shadow: 2px 2px 10px #000; color: #ccc; }
         
-        /* Detaylı KVKK Alanı */
+        /* KVKK ve Etik Bilgi Alanı */
         .kvkk-info { 
             margin-top: 40px; 
-            padding: 25px; 
+            padding: 15px; 
             border: 1px dashed rgba(0, 255, 65, 0.3); 
-            border-radius: 12px; 
-            max-width: 900px; 
+            border-radius: 8px; 
+            max-width: 800px; 
             margin-left: auto; 
             margin-right: auto;
             background: rgba(0, 255, 65, 0.05);
-            text-align: left;
         }
         .kvkk-info p { 
-            font-size: 13px; 
-            color: #aaa; 
-            line-height: 1.8; 
+            font-size: 12px; 
+            color: #888; 
+            line-height: 1.5; 
             font-family: 'JetBrains Mono', monospace;
         }
-        .kvkk-header { color: var(--matrix-green); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(0,255,65,0.2); padding-bottom: 5px; }
 
+        .footer-quote { margin-top: 20px; font-style: italic; color: var(--matrix-green); font-size: 14px; opacity: 0.8; letter-spacing: 1px; }
+        
         .main-btn { margin: 30px 0; padding: 20px 40px; border: 2px solid var(--matrix-green); background: rgba(0, 0, 0, 0.9); color: var(--matrix-green); font-family: 'Orbitron'; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 12px; box-shadow: 0 0 20px var(--matrix-green); transition: all 0.3s ease; }
         .main-btn:hover { background: var(--matrix-green); color: black; transform: scale(1.05); }
         
         .qr-section { margin-top: 20px; padding: 20px; background: rgba(255, 0, 255, 0.05); border: 1px solid var(--neon-pink); border-radius: 20px; backdrop-filter: blur(10px); display: inline-block; }
         .qr-image { background: white; padding: 10px; border-radius: 10px; width: 150px; height: 150px; margin: 10px auto; display: block; }
         
-        /* Admin Paneli ve Tablo Geliştirmeleri */
-        #admin-panel { display: none; background: #0a0a0a; border: 2px solid var(--matrix-green); margin-top: 50px; padding: 30px; border-radius: 15px; width: 100%; overflow-x: auto; box-shadow: 0 0 40px rgba(0,255,65,0.2); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; color: #ffffff; min-width: 1000px; font-family: 'JetBrains Mono', monospace; }
-        th, td { border: 1px solid #333; padding: 15px; text-align: left; }
-        th { background: #1a1a1a; color: var(--matrix-green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .panel { display: none; margin-top: 50px; width: 100%; animation: slideUp 0.8s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .card { background: rgba(0, 0, 0, 0.9); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 15px; text-align: left; }
+        .card .title { color: var(--neon-blue); font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,229,255,0.2); }
+        .card .value { font-family: 'JetBrains Mono'; font-size: 13px; word-break: break-all; color: #fff; }
         
-        /* Kırmızı Vurgular */
-        .val-red { color: #ff3333 !important; font-weight: bold; text-shadow: 0 0 5px rgba(255, 51, 51, 0.3); }
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        #admin-panel { display: none; background: #111; border: 2px solid var(--matrix-green); margin-top: 50px; padding: 20px; border-radius: 15px; width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; color: #fff; min-width: 1000px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+        th { background: #222; color: var(--matrix-green); }
+        .status-badge { padding: 2px 5px; border-radius: 4px; font-size: 10px; }
         .badge-red { background: #ff0055; color: white; }
         .badge-green { background: #00ff41; color: black; }
-
-        /* Admin Password Modal */
-        #admin-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; }
-        .modal-content { background: #111; padding: 30px; border: 1px solid var(--matrix-green); border-radius: 12px; text-align: center; }
-        .modal-content input { background: #000; border: 1px solid var(--matrix-green); color: white; padding: 10px; margin: 10px 0; width: 200px; border-radius: 8px; text-align: center; }
     </style>
 </head>
 <body>
     <canvas id="matrix-canvas"></canvas>
-    
-    <div id="admin-modal">
-        <div class="modal-content">
-            <h3 class="mb-4 text-matrix-green">YÖNETİCİ GİRİŞİ</h3>
-            <input type="password" id="admin-pass-input" placeholder="Şifre Giriniz">
-            <div class="mt-4">
-                <button class="px-4 py-2 bg-green-600 text-black rounded" onclick="checkAdminPass()">Giriş</button>
-                <button class="px-4 py-2 bg-gray-700 text-white rounded ml-2" onclick="closeAdminModal()">İptal</button>
-            </div>
-        </div>
-    </div>
-
     <div class="content-layer">
         <div class="container">
             <h1 id="main-title" onclick="handleAdminClick()">Dijital Gölgen Kimin Ellerinde?</h1>
@@ -118,66 +80,46 @@
             
             <div class="qr-section">
                 <h2 style="color: var(--neon-pink); font-size: 14px;">📱 MOBİL TEST</h2>
-                <img id="qr-code" class="qr-image" src="https://placehold.co/150x150/ffffff/000000?text=QR" alt="QR">
+                <img id="qr-code" class="qr-image" src="" alt="QR">
             </div>
 
-            <div class="panel" id="user-panel" style="display:none; margin-top: 30px;">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
-                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">IP / Bağlantı</div>
-                        <div id="v-ip" class="font-mono text-sm">...</div>
-                    </div>
-                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
-                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">Konum Bilgisi</div>
-                        <div id="v-loc" class="font-mono text-sm">...</div>
-                    </div>
-                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
-                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">Batarya Durumu</div>
-                        <div id="v-bat" class="font-mono text-sm">...</div>
-                    </div>
+            <div class="panel" id="user-panel">
+                <div class="grid">
+                    <div class="card"><div class="title">IP / VPN</div><div id="v-ip" class="value">...</div></div>
+                    <div class="card"><div class="title">KONUM</div><div id="v-loc" class="value">...</div></div>
+                    <div class="card"><div class="title">CİHAZ</div><div id="v-dev" class="value">...</div></div>
+                    <div class="card"><div class="title">TARAYICI</div><div id="v-brw" class="value">...</div></div>
+                    <div class="card"><div class="title">EKRAN</div><div id="v-scr" class="value">...</div></div>
+                    <div class="card"><div class="title">BATARYA</div><div id="v-bat" class="value">...</div></div>
+                    <div class="card"><div class="title">HIZ</div><div id="v-spd" class="value">...</div></div>
                 </div>
             </div>
 
             <div id="admin-panel">
-                <h2 style="color: var(--matrix-green); font-size: 24px; margin-bottom: 20px;">SİSTEM KAYITLARI (GÜNCEL)</h2>
+                <h2 style="color: var(--matrix-green);">SİSTEM KAYITLARI (GÜNCEL)</h2>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Zaman</th>
-                            <th>IP</th>
-                            <th>Konum (Kırmızı)</th>
-                            <th>Cihaz Bilgisi</th>
-                            <th>Ekran</th>
-                            <th>Pil (Kırmızı)</th>
-                            <th>Hız</th>
-                            <th>VPN</th>
-                        </tr>
+                        <tr><th>Zaman</th><th>IP / Konum</th><th>Cihaz</th><th>Tarayıcı</th><th>Ekran</th><th>Pil</th><th>Hız</th><th>VPN</th></tr>
                     </thead>
                     <tbody id="admin-table-body"></tbody>
                 </table>
             </div>
 
             <div class="kvkk-info">
-                <span class="kvkk-header">[ETİK BİLDİRİM & GENİŞLETİLMİŞ KVKK AYDINLATMA METNİ]</span>
-                <p>
-                    <strong>1. Amaç ve Kapsam:</strong> Bu platform, siber güvenlik farkındalığını artırmak ve bir kullanıcının tarayıcı üzerinden ne kadar verisinin okunabildiğini göstermek amacıyla tasarlanmış bir "Etik Simülasyon" projesidir.<br><br>
-                    <strong>2. Veri İşleme Prensipleri:</strong> Analiz sırasında erişilen IP adresi, yaklaşık coğrafi konum, cihaz modeli, ekran çözünürlüğü ve batarya seviyesi gibi teknik veriler; yalnızca kullanıcının dijital dünyadaki görünürlüğünü kanıtlamak amacıyla anlık olarak işlenir.<br><br>
-                    <strong>3. Güvenlik ve Gizlilik:</strong> 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, bu sistem üzerinden elde edilen hiçbir veri reklam ağları, veri komisyoncuları veya ticari kuruluşlarla asla paylaşılmaz. Veriler yalnızca siber güvenlik eğitim sunumları için sistem loglarında tutulur.<br><br>
-                    <strong>4. Kullanıcı Onayı:</strong> "Sistemi Analiz Et" butonuna basarak, tarayıcınızın sunduğu halka açık teknik bilgilerin bir rapor halinde size sunulmasını ve bu verilerin eğitim amaçlı sistem kayıtlarına geçmesini kabul etmiş sayılırsınız.
-                </p>
+                <p><strong>[ETİK BİLDİRİM & KVKK]</strong><br>
+                Bu platform farkındalık amaçlı bir eğitim projesidir. Analiz sırasında erişilen veriler yalnızca dijital ayak izi simülasyonunu göstermek için kullanılır. 6698 sayılı KVKK kapsamında tüm bilgiler gizli tutulmakta, hiçbir üçüncü taraf veya ticari kurumla paylaşılmamaktadır.</p>
             </div>
 
-            <div class="footer-quote-styled">“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</div>
+            <p class="footer-quote">“Gerçek farkındalık, öğrendiğini kullanabildiğin anda başlar.”</p>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- Firebase SDK (Version 8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'digital-shadow-demo';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+    <script>
+        const firebaseConfig = {
             apiKey: "AIzaSyDTIhCipnX9D1dSRAQZSWz6sZb0gBUPDq8",
             authDomain: "dijital-golgen-kimin-ellerinde.firebaseapp.com",
             projectId: "dijital-golgen-kimin-ellerinde",
@@ -185,12 +127,10 @@
             messagingSenderId: "540853859036",
             appId: "1:540853859036:web:742ad324abbfdb90fc7a19"
         };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        window.runAnalysis = async function() {
+        async function runAnalysis() {
             document.getElementById("user-panel").style.display = "block";
             
             let data = {
@@ -209,7 +149,7 @@
                 const res = await fetch('https://ipapi.co/json/');
                 const d = await res.json();
                 data.ip = d.ip || "Bilinmiyor";
-                data.loc = (d.city || "") + " / " + (d.country_name || "");
+                data.loc = (d.city || "") + "/" + (d.country_name || "");
                 data.vpn = ["vpn","proxy","hosting"].some(k => (d.org||"").toLowerCase().includes(k)) ? "EVET" : "HAYIR";
                 
                 document.getElementById("v-ip").innerText = data.ip;
@@ -226,24 +166,21 @@
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if(conn) data.spd = (conn.effectiveType || "").toUpperCase() + " (" + (conn.downlink || "0") + "Mbps)";
 
+            document.getElementById("v-dev").innerText = data.dev;
+            document.getElementById("v-brw").innerText = data.brw;
+            document.getElementById("v-scr").innerText = data.scr;
             document.getElementById("v-bat").innerText = data.bat;
+            document.getElementById("v-spd").innerText = data.spd;
 
-            try {
-                const userCred = await signInAnonymously(auth);
-                if (userCred.user) {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'analizler'), data);
-                }
-            } catch (err) {
-                console.error("Kayıt hatası:", err);
-            }
-        };
+            await db.collection("analizler").add(data);
+        }
 
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.onresize = resizeCanvas; resizeCanvas();
+        function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = res; res();
         const drops = Array(Math.floor(canvas.width/18)).fill(1);
-        function drawMatrix() {
+        function draw() {
             ctx.fillStyle = 'rgba(0,0,0,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
             ctx.fillStyle = '#0f0'; ctx.font = '18px monospace';
             drops.forEach((y, i) => {
@@ -252,58 +189,39 @@
                 drops[i]++;
             });
         }
-        setInterval(drawMatrix, 40);
-
-        window.onload = () => { 
-            document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`; 
-        };
+        setInterval(draw, 40);
+        window.onload = () => { document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`; };
 
         let clickCount = 0;
-        window.handleAdminClick = function() {
+        function handleAdminClick() {
             clickCount++;
             if (clickCount === 5) {
-                document.getElementById("admin-modal").style.display = "flex";
+                const pass = prompt("Şifre:");
+                if (pass === "1234" || pass === "hoca") {
+                    document.getElementById("admin-panel").style.display = "block";
+                    loadAdminData();
+                }
                 clickCount = 0;
             }
-        };
-
-        window.closeAdminModal = function() {
-            document.getElementById("admin-modal").style.display = "none";
-        };
-
-        window.checkAdminPass = function() {
-            const pass = document.getElementById("admin-pass-input").value;
-            if (pass === "1234" || pass === "hoca") {
-                document.getElementById("admin-panel").style.display = "block";
-                closeAdminModal();
-                loadAdminData();
-            } else {
-                document.getElementById("admin-pass-input").value = "";
-                document.getElementById("admin-pass-input").placeholder = "Hatalı Şifre!";
-            }
-        };
+        }
 
         function loadAdminData() {
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'analizler'), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snap) => {
+            db.collection("analizler").orderBy("timestamp", "desc").limit(30).onSnapshot(snap => {
                 const tbody = document.getElementById("admin-table-body");
                 tbody.innerHTML = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const time = d.timestamp ? new Date(d.timestamp).toLocaleTimeString() : '---';
                     tbody.innerHTML += `<tr>
-                        <td>${time}</td>
-                        <td>${d.ip || '---'}</td>
-                        <td class="val-red">${d.loc || '---'}</td>
+                        <td>${new Date(d.timestamp).toLocaleTimeString()}</td>
+                        <td>${d.ip || '---'}<br><small>${d.loc || '---'}</small></td>
                         <td>${d.dev || '---'}</td>
+                        <td>${d.brw || '---'}</td>
                         <td>${d.scr || '---'}</td>
-                        <td class="val-red">${d.bat || '---'}</td>
+                        <td>${d.bat || '---'}</td>
                         <td>${d.spd || '---'}</td>
                         <td><span class="status-badge ${d.vpn === 'EVET' ? 'badge-red' : 'badge-green'}">${d.vpn || 'HAYIR'}</span></td>
                     </tr>`;
                 });
-            }, (error) => {
-                console.error("Snapshot error:", error);
             });
         }
     </script>
