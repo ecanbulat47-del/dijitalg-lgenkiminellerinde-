@@ -25,24 +25,33 @@
         .content-layer { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; background: rgba(0, 0, 0, 0.4); }
         .container { max-width: 1100px; width: 95%; margin: auto; padding: 60px 20px; text-align: center; }
         
+        /* Ana Başlık ve Alt Söz - Cafcaflı Stil */
         h1, .footer-quote-styled { 
-            font-size: clamp(24px, 5vw, 42px); 
+            font-size: clamp(28px, 6vw, 48px); 
             color: var(--neon-blue); 
-            text-shadow: 0 0 20px var(--neon-blue); 
-            margin-bottom: 20px; 
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px rgba(0, 229, 255, 0.5); 
+            margin-bottom: 30px; 
             cursor: pointer;
             text-transform: uppercase;
             font-weight: 700;
+            letter-spacing: 2px;
+            animation: pulseGlow 2s infinite alternate;
         }
 
         .footer-quote-styled {
-            margin-top: 60px;
+            margin-top: 80px;
             color: var(--matrix-green);
-            text-shadow: 0 0 20px var(--matrix-green);
+            text-shadow: 0 0 10px var(--matrix-green), 0 0 20px var(--matrix-green);
+        }
+
+        @keyframes pulseGlow {
+            from { transform: scale(1); text-shadow: 0 0 10px currentColor; }
+            to { transform: scale(1.02); text-shadow: 0 0 25px currentColor, 0 0 45px currentColor; }
         }
 
         .intro-text { font-size: 18px; line-height: 1.6; margin-bottom: 10px; text-shadow: 2px 2px 10px #000; color: #ccc; }
         
+        /* Detaylı KVKK Alanı */
         .kvkk-info { 
             margin-top: 40px; 
             padding: 25px; 
@@ -60,7 +69,7 @@
             line-height: 1.8; 
             font-family: 'JetBrains Mono', monospace;
         }
-        .kvkk-header { color: var(--matrix-green); font-weight: bold; margin-bottom: 10px; display: block; }
+        .kvkk-header { color: var(--matrix-green); font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid rgba(0,255,65,0.2); padding-bottom: 5px; }
 
         .main-btn { margin: 30px 0; padding: 20px 40px; border: 2px solid var(--matrix-green); background: rgba(0, 0, 0, 0.9); color: var(--matrix-green); font-family: 'Orbitron'; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 12px; box-shadow: 0 0 20px var(--matrix-green); transition: all 0.3s ease; }
         .main-btn:hover { background: var(--matrix-green); color: black; transform: scale(1.05); }
@@ -68,19 +77,14 @@
         .qr-section { margin-top: 20px; padding: 20px; background: rgba(255, 0, 255, 0.05); border: 1px solid var(--neon-pink); border-radius: 20px; backdrop-filter: blur(10px); display: inline-block; }
         .qr-image { background: white; padding: 10px; border-radius: 10px; width: 150px; height: 150px; margin: 10px auto; display: block; }
         
-        .panel { display: none; margin-top: 50px; width: 100%; animation: slideUp 0.8s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .card { background: rgba(0, 0, 0, 0.9); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 15px; text-align: left; }
-        .card .title { color: var(--neon-blue); font-size: 11px; margin-bottom: 5px; border-bottom: 1px solid rgba(0,229,255,0.2); }
-        .card .value { font-family: 'JetBrains Mono'; font-size: 13px; word-break: break-all; color: #fff; }
-        
+        /* Admin Paneli ve Tablo Geliştirmeleri */
         #admin-panel { display: none; background: #0a0a0a; border: 2px solid var(--matrix-green); margin-top: 50px; padding: 30px; border-radius: 15px; width: 100%; overflow-x: auto; box-shadow: 0 0 40px rgba(0,255,65,0.2); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 15px; color: #ffffff; min-width: 1000px; font-family: 'JetBrains Mono', monospace; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 16px; color: #ffffff; min-width: 1000px; font-family: 'JetBrains Mono', monospace; }
         th, td { border: 1px solid #333; padding: 15px; text-align: left; }
         th { background: #1a1a1a; color: var(--matrix-green); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
-        .val-red { color: #ff4444 !important; font-weight: bold; }
+        /* Kırmızı Vurgular */
+        .val-red { color: #ff3333 !important; font-weight: bold; text-shadow: 0 0 5px rgba(255, 51, 51, 0.3); }
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
         .badge-red { background: #ff0055; color: white; }
         .badge-green { background: #00ff41; color: black; }
@@ -117,15 +121,20 @@
                 <img id="qr-code" class="qr-image" src="https://placehold.co/150x150/ffffff/000000?text=QR" alt="QR">
             </div>
 
-            <div class="panel" id="user-panel">
-                <div class="grid">
-                    <div class="card"><div class="title">IP / VPN</div><div id="v-ip" class="value">...</div></div>
-                    <div class="card"><div class="title">KONUM</div><div id="v-loc" class="value">...</div></div>
-                    <div class="card"><div class="title">CİHAZ</div><div id="v-dev" class="value">...</div></div>
-                    <div class="card"><div class="title">TARAYICI</div><div id="v-brw" class="value">...</div></div>
-                    <div class="card"><div class="title">EKRAN</div><div id="v-scr" class="value">...</div></div>
-                    <div class="card"><div class="title">BATARYA</div><div id="v-bat" class="value">...</div></div>
-                    <div class="card"><div class="title">HIZ</div><div id="v-spd" class="value">...</div></div>
+            <div class="panel" id="user-panel" style="display:none; margin-top: 30px;">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
+                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">IP / Bağlantı</div>
+                        <div id="v-ip" class="font-mono text-sm">...</div>
+                    </div>
+                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
+                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">Konum Bilgisi</div>
+                        <div id="v-loc" class="font-mono text-sm">...</div>
+                    </div>
+                    <div class="bg-black/80 p-4 border border-blue-400 rounded-xl text-left">
+                        <div class="text-[10px] text-blue-400 border-b border-blue-400/20 mb-2 uppercase">Batarya Durumu</div>
+                        <div id="v-bat" class="font-mono text-sm">...</div>
+                    </div>
                 </div>
             </div>
 
@@ -137,7 +146,7 @@
                             <th>Zaman</th>
                             <th>IP</th>
                             <th>Konum (Kırmızı)</th>
-                            <th>Cihaz</th>
+                            <th>Cihaz Bilgisi</th>
                             <th>Ekran</th>
                             <th>Pil (Kırmızı)</th>
                             <th>Hız</th>
@@ -149,12 +158,12 @@
             </div>
 
             <div class="kvkk-info">
-                <span class="kvkk-header">[ETİK BİLDİRİM & KVKK AYDINLATMA METNİ]</span>
+                <span class="kvkk-header">[ETİK BİLDİRİM & GENİŞLETİLMİŞ KVKK AYDINLATMA METNİ]</span>
                 <p>
-                    <strong>1. Amaç:</strong> Bu platform, siber güvenlik farkındalığını artırmak ve dijital ayak izinin şeffaflığını göstermek amacıyla oluşturulmuş bir eğitim projesidir.<br>
-                    <strong>2. Veri İşleme:</strong> Analiz sırasında erişilen IP adresi, yaklaşık konum, cihaz modeli, tarayıcı bilgileri ve pil seviyesi gibi veriler; yalnızca kullanıcının dijital dünyada ne kadar "görünür" olduğunu simüle etmek için işlenir.<br>
-                    <strong>3. Güvenlik:</strong> 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, elde edilen veriler hiçbir şekilde üçüncü şahıslar, reklam ağları veya ticari kuruluşlarla paylaşılmaz. Veriler geçici olarak anonimleştirilmiş sistem loglarında tutulur.<br>
-                    <strong>4. Sorumluluk:</strong> Bu uygulama bir saldırı aracı değildir. Kullanıcı, butona basarak kendi teknik verilerinin bir analiz çıktısı olarak sunulmasını kabul eder.
+                    <strong>1. Amaç ve Kapsam:</strong> Bu platform, siber güvenlik farkındalığını artırmak ve bir kullanıcının tarayıcı üzerinden ne kadar verisinin okunabildiğini göstermek amacıyla tasarlanmış bir "Etik Simülasyon" projesidir.<br><br>
+                    <strong>2. Veri İşleme Prensipleri:</strong> Analiz sırasında erişilen IP adresi, yaklaşık coğrafi konum, cihaz modeli, ekran çözünürlüğü ve batarya seviyesi gibi teknik veriler; yalnızca kullanıcının dijital dünyadaki görünürlüğünü kanıtlamak amacıyla anlık olarak işlenir.<br><br>
+                    <strong>3. Güvenlik ve Gizlilik:</strong> 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, bu sistem üzerinden elde edilen hiçbir veri reklam ağları, veri komisyoncuları veya ticari kuruluşlarla asla paylaşılmaz. Veriler yalnızca siber güvenlik eğitim sunumları için sistem loglarında tutulur.<br><br>
+                    <strong>4. Kullanıcı Onayı:</strong> "Sistemi Analiz Et" butonuna basarak, tarayıcınızın sunduğu halka açık teknik bilgilerin bir rapor halinde size sunulmasını ve bu verilerin eğitim amaçlı sistem kayıtlarına geçmesini kabul etmiş sayılırsınız.
                 </p>
             </div>
 
@@ -164,8 +173,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'digital-shadow-demo';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -217,16 +226,11 @@
             const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
             if(conn) data.spd = (conn.effectiveType || "").toUpperCase() + " (" + (conn.downlink || "0") + "Mbps)";
 
-            document.getElementById("v-dev").innerText = data.dev;
-            document.getElementById("v-brw").innerText = data.brw;
-            document.getElementById("v-scr").innerText = data.scr;
             document.getElementById("v-bat").innerText = data.bat;
-            document.getElementById("v-spd").innerText = data.spd;
 
-            // Veriyi Firebase'e kaydet (Sistem kuralına uygun yol)
             try {
-                const user = await signInAnonymously(auth);
-                if (user) {
+                const userCred = await signInAnonymously(auth);
+                if (userCred.user) {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'analizler'), data);
                 }
             } catch (err) {
@@ -250,7 +254,6 @@
         }
         setInterval(drawMatrix, 40);
 
-        // QR Kod Oluşturma
         window.onload = () => { 
             document.getElementById("qr-code").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`; 
         };
@@ -298,9 +301,9 @@
                         <td>${d.spd || '---'}</td>
                         <td><span class="status-badge ${d.vpn === 'EVET' ? 'badge-red' : 'badge-green'}">${d.vpn || 'HAYIR'}</span></td>
                     </tr>`;
-                }, (error) => {
-                    console.error("Snapshot error:", error);
                 });
+            }, (error) => {
+                console.error("Snapshot error:", error);
             });
         }
     </script>
